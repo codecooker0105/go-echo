@@ -1,7 +1,9 @@
 package auth
 
 import (
+	"fmt"
 	"github.com/dgrijalva/jwt-go"
+	"github.com/jinzhu/gorm"
 	"github.com/labstack/echo/v4"
 	"github.com/triaton/forum-backend-echo/common"
 	"net/http"
@@ -10,6 +12,17 @@ import (
 )
 
 type Controller struct {
+	Db *gorm.DB
+}
+
+type RegisterUserRequest struct {
+	Email    string `json:"email" form:"email" query:"email" validate:"email,required"`
+	Name     string `json:"name" validate:"required"`
+	Password string `json:"password" validate:"required"`
+}
+
+func (r RegisterUserRequest) String() string {
+	return fmt.Sprintf("%s, %s, %s", r.Email, r.Name, r.Password)
 }
 
 func (controller Controller) Routes() []common.Route {
@@ -18,6 +31,11 @@ func (controller Controller) Routes() []common.Route {
 			Method:  echo.POST,
 			Path:    "/auth/login",
 			Handler: controller.Login,
+		},
+		{
+			Method:  echo.POST,
+			Path:    "/auth/register",
+			Handler: controller.Register,
 		},
 		{
 			Method:     echo.GET,
@@ -34,7 +52,17 @@ func (controller Controller) Profile(c echo.Context) error {
 	})
 }
 
-// Get login information as well as user JWT token.
+func (controller Controller) Register(ctx echo.Context) error {
+	params := new(RegisterUserRequest)
+	if err := ctx.Bind(params); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err)
+	}
+	if err := ctx.Validate(params); err != nil {
+		return ctx.JSON(http.StatusBadRequest, err.Error())
+	}
+	return ctx.String(http.StatusOK, fmt.Sprint(params.Email, ", ", params.Name, ", ", params.Password))
+}
+
 func (controller Controller) Login(c echo.Context) error {
 	var (
 		email, password string

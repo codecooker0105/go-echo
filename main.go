@@ -2,11 +2,15 @@ package main
 
 import (
 	_ "fmt"
+	"github.com/go-playground/validator"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/labstack/gommon/log"
+	"github.com/triaton/forum-backend-echo/common"
+	"github.com/triaton/forum-backend-echo/database"
+	"github.com/triaton/forum-backend-echo/models"
 	"github.com/triaton/forum-backend-echo/routes"
 	_ "net/http"
 )
@@ -19,6 +23,7 @@ func main() {
 	}
 	//Define API wrapper
 	api := echo.New()
+	api.Validator = &common.CustomValidator{Validator: validator.New()}
 	api.Use(middleware.Logger())
 	api.Use(middleware.Recover())
 	// CORS middleware for API endpoint.
@@ -26,7 +31,12 @@ func main() {
 		AllowOrigins: []string{"*"},
 		AllowMethods: []string{echo.GET, echo.HEAD, echo.PUT, echo.PATCH, echo.POST, echo.DELETE},
 	}))
-	routes.DefineApiRoute(api)
+	db := database.ConnectPostgreSQL()
+	for _, model := range models.Models {
+		db.AutoMigrate(model)
+	}
+
+	routes.DefineApiRoute(api, db)
 
 	server := echo.New()
 	server.Any("/*", func(c echo.Context) (err error) {

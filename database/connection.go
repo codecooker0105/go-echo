@@ -8,13 +8,7 @@ import (
 	"log"
 )
 
-type DatabaseProvider interface{}
-
-type DatabaseProviderConnection struct {
-	Db *gorm.DB
-}
-
-func ConnectPostgreSQL() DatabaseProvider {
+func ConnectPostgreSQL() *gorm.DB {
 	databaseConfig := config.DatabaseNew().(*config.DatabaseConfig)
 	print("%s:%s:%s:%S")
 	db, err := gorm.Open("postgres", fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s",
@@ -27,8 +21,5 @@ func ConnectPostgreSQL() DatabaseProvider {
 	if err != nil {
 		log.Fatalf("Could not connect to database :%v", err)
 	}
-
-	return &DatabaseProviderConnection{
-		Db: db,
-	}
+	return db
 }

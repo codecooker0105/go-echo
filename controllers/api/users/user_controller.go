@@ -1,12 +1,15 @@
 package users
 
 import (
+	"github.com/jinzhu/gorm"
 	"github.com/labstack/echo/v4"
 	"github.com/triaton/forum-backend-echo/common"
 	"net/http"
 )
 
-type Controller struct{}
+type Controller struct {
+	Db *gorm.DB
+}
 
 func (controller Controller) Routes() []common.Route {
 	return []common.Route{
