@@ -58,7 +58,7 @@ func (controller Controller) Register(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err)
 	}
 	if err := ctx.Validate(params); err != nil {
-		return ctx.JSON(http.StatusBadRequest, err.Error())
+		return ctx.JSON(http.StatusBadRequest, err)
 	}
 	return ctx.String(http.StatusOK, fmt.Sprint(params.Email, ", ", params.Name, ", ", params.Password))
 }
