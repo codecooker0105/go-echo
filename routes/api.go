@@ -1,17 +1,16 @@
 package routes
 
 import (
-	"github.com/jinzhu/gorm"
 	"github.com/labstack/echo/v4"
 	"github.com/triaton/forum-backend-echo/common"
 	Auth "github.com/triaton/forum-backend-echo/controllers/api/auth"
 	Users "github.com/triaton/forum-backend-echo/controllers/api/users"
 )
 
-func DefineApiRoute(e *echo.Echo, Db *gorm.DB) {
+func DefineApiRoute(e *echo.Echo) {
 	controllers := []common.Controller{
-		Auth.Controller{Db: Db},
-		Users.Controller{Db: Db},
+		Auth.Controller{},
+		Users.Controller{},
 	}
 	var routes []common.Route
 	for _, controller := range controllers {

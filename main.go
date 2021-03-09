@@ -31,12 +31,12 @@ func main() {
 		AllowOrigins: []string{"*"},
 		AllowMethods: []string{echo.GET, echo.HEAD, echo.PUT, echo.PATCH, echo.POST, echo.DELETE},
 	}))
-	db := database.ConnectPostgreSQL()
+	db := database.GetInstance()
 	for _, model := range models.Models {
 		db.AutoMigrate(model)
 	}
 
-	routes.DefineApiRoute(api, db)
+	routes.DefineApiRoute(api)
 
 	server := echo.New()
 	server.Any("/*", func(c echo.Context) (err error) {
