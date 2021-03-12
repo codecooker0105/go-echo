@@ -2,17 +2,17 @@ package models
 
 import (
 	_ "github.com/jinzhu/gorm"
+	"github.com/triaton/forum-backend-echo/common"
 	"github.com/triaton/forum-backend-echo/common/utils"
-	"time"
 )
 
 type User struct {
-	ID        uint   `gorm:"primary_key"`
-	Email     string `gorm:"type:varchar(100);unique_index"`
-	Name      string
-	Password  string
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	Base
+	Email    string `gorm:"type:varchar(100);unique_index"`
+	Name     string
+	Role     common.UserRole
+	Password string
+	Blogs    []Blog
 }
 
 func (user User) String() string {

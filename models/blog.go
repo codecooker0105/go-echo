@@ -2,13 +2,12 @@ package models
 
 import (
 	_ "github.com/jinzhu/gorm"
-	"time"
+	uuid "github.com/satori/go.uuid"
 )
 
 type Blog struct {
-	ID        uint `gorm:"primary_key"`
-	Title     string
-	Content   string
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	Base
+	Title   string
+	Content string
+	UserID  uuid.UUID
 }

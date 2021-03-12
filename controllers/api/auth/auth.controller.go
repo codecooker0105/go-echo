@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	"github.com/triaton/forum-backend-echo/common"
 	"github.com/triaton/forum-backend-echo/common/utils"
 	"github.com/triaton/forum-backend-echo/config"
@@ -50,15 +51,15 @@ func (controller Controller) Routes() []common.Route {
 			Method:     echo.GET,
 			Path:       "/auth/profile",
 			Handler:    controller.Profile,
-			Middleware: []echo.MiddlewareFunc{common.JwtMiddleWare()},
+			Middleware: []echo.MiddlewareFunc{middleware.JWTWithConfig(config.JwtConfig())},
 		},
 	}
 }
 
 func (controller Controller) Profile(c echo.Context) error {
-	return c.JSON(http.StatusOK, map[string]string{
-		"message": "ok",
-	})
+	user := c.Get("user").(*jwt.Token)
+	token := user.Claims.(*common.JwtCustomClaims)
+	return c.JSON(http.StatusOK, token)
 }
 
 func (controller Controller) Register(ctx echo.Context) error {
@@ -77,6 +78,7 @@ func (controller Controller) Register(ctx echo.Context) error {
 	}
 	user.Name = params.Name
 	user.Email = params.Email
+	user.Role = common.Admin
 	user.Password = params.Password
 	db.Create(&user)
 	return ctx.JSON(http.StatusOK, user)
@@ -102,13 +104,17 @@ func (controller Controller) Login(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusUnauthorized, "Invalid email or password")
 	}
 	// Create token
-	token := jwt.New(jwt.SigningMethodHS256)
-	// Set claims
-	claims := token.Claims.(jwt.MapClaims)
-	claims["name"] = user.Name
-	claims["iat"] = time.Now().Unix()
-	claims["exp"] = time.Now().Add(time.Hour * config.TokenExpiresIn).Unix()
-	// Generate encoded token and send it as response.
+	claims := &common.JwtCustomClaims{
+		Name: user.Name,
+		Id:   user.ID,
+		Role: user.Role,
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: time.Now().Add(time.Hour * config.TokenExpiresIn).Unix(),
+			IssuedAt:  time.Now().Unix(),
+		},
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	t, err := token.SignedString([]byte(os.Getenv("JWT_SECRET_KEY")))
 	if err != nil {
 		return err

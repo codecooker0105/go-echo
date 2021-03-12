@@ -4,6 +4,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/triaton/forum-backend-echo/common"
 	Auth "github.com/triaton/forum-backend-echo/controllers/api/auth"
+	Blogs "github.com/triaton/forum-backend-echo/controllers/api/blog"
 	Users "github.com/triaton/forum-backend-echo/controllers/api/users"
 )
 
@@ -11,6 +12,7 @@ func DefineApiRoute(e *echo.Echo) {
 	controllers := []common.Controller{
 		Auth.Controller{},
 		Users.Controller{},
+		Blogs.Controller{},
 	}
 	var routes []common.Route
 	for _, controller := range controllers {
