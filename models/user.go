@@ -13,6 +13,7 @@ type User struct {
 	Role     common.UserRole
 	Password string
 	Blogs    []Blog
+	Comments []Comment
 }
 
 func (user User) String() string {

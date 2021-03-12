@@ -5,10 +5,9 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
-type Blog struct {
+type Comment struct {
 	Base
-	Title    string
-	Content  string
-	UserID   uuid.UUID
-	Comments []Comment
+	Content string
+	UserID  uuid.UUID
+	BlogID  uuid.UUID
 }
