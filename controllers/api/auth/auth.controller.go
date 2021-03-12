@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
 	"github.com/triaton/forum-backend-echo/common"
 	"github.com/triaton/forum-backend-echo/common/utils"
 	"github.com/triaton/forum-backend-echo/config"
@@ -51,7 +50,7 @@ func (controller Controller) Routes() []common.Route {
 			Method:     echo.GET,
 			Path:       "/auth/profile",
 			Handler:    controller.Profile,
-			Middleware: []echo.MiddlewareFunc{middleware.JWTWithConfig(config.JwtConfig())},
+			Middleware: []echo.MiddlewareFunc{common.JwtMiddleWare()},
 		},
 	}
 }

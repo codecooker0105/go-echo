@@ -17,5 +17,8 @@ type JwtCustomClaims struct {
 
 func JwtMiddleWare() echo.MiddlewareFunc {
 	key := os.Getenv("JWT_SECRET_KEY")
-	return middleware.JWT([]byte(key))
+	return middleware.JWTWithConfig(middleware.JWTConfig{
+		Claims:     &JwtCustomClaims{},
+		SigningKey: []byte(key),
+	})
 }
