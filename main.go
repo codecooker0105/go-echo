@@ -10,7 +10,7 @@ import (
 	"github.com/labstack/gommon/log"
 	"github.com/triaton/forum-backend-echo/common"
 	"github.com/triaton/forum-backend-echo/database"
-	"github.com/triaton/forum-backend-echo/models"
+	"github.com/triaton/forum-backend-echo/migrations"
 	"github.com/triaton/forum-backend-echo/routes"
 	_ "net/http"
 )
@@ -32,10 +32,13 @@ func main() {
 		AllowMethods: []string{echo.GET, echo.HEAD, echo.PUT, echo.PATCH, echo.POST, echo.DELETE},
 	}))
 	db := database.GetInstance()
-	for _, model := range models.Models {
-		db.AutoMigrate(model)
+	m := migrations.GetMigrations(db)
+	err = m.Migrate()
+	if err == nil {
+		print("Migrations did run successfully")
+	} else {
+		print("migrations failed.", err)
 	}
-
 	routes.DefineApiRoute(api)
 
 	server := echo.New()

@@ -31,6 +31,7 @@ require (
 	golang.org/x/sys v0.0.0-20200625212154-ddb9806d33ae // indirect
 	golang.org/x/text v0.3.3 // indirect
 	golang.org/x/tools v0.0.0-20200715235423-130c9f19d3fe // indirect
+	gopkg.in/gormigrate.v1 v1.6.0
 	gopkg.in/urfave/cli.v1 v1.20.0 // indirect
 	gopkg.in/yaml.v2 v2.3.0 // indirect
 )
