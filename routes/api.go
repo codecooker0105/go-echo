@@ -6,13 +6,11 @@ import (
 	Auth "github.com/triaton/forum-backend-echo/controllers/api/auth"
 	Blogs "github.com/triaton/forum-backend-echo/controllers/api/blog"
 	Comments "github.com/triaton/forum-backend-echo/controllers/api/comment"
-	Users "github.com/triaton/forum-backend-echo/controllers/api/users"
 )
 
 func DefineApiRoute(e *echo.Echo) {
 	controllers := []common.Controller{
 		Auth.Controller{},
-		Users.Controller{},
 		Blogs.Controller{},
 		Comments.Controller{},
 	}
