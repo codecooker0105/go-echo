@@ -2,17 +2,16 @@ package routes
 
 import (
 	"github.com/labstack/echo/v4"
+	"github.com/triaton/forum-backend-echo/auth"
+	"github.com/triaton/forum-backend-echo/blogs"
 	"github.com/triaton/forum-backend-echo/common"
-	Auth "github.com/triaton/forum-backend-echo/controllers/api/auth"
-	Blogs "github.com/triaton/forum-backend-echo/controllers/api/blog"
-	Comments "github.com/triaton/forum-backend-echo/controllers/api/comment"
 )
 
 func DefineApiRoute(e *echo.Echo) {
 	controllers := []common.Controller{
-		Auth.Controller{},
-		Blogs.Controller{},
-		Comments.Controller{},
+		auth.AuthController{},
+		blogs.BlogsController{},
+		blogs.CommentController{},
 	}
 	var routes []common.Route
 	for _, controller := range controllers {

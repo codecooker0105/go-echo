@@ -1,17 +1,17 @@
-package comment
+package blogs
 
 import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/labstack/echo/v4"
 	uuid "github.com/satori/go.uuid"
+	"github.com/triaton/forum-backend-echo/blogs/models"
 	"github.com/triaton/forum-backend-echo/common"
 	"github.com/triaton/forum-backend-echo/database"
-	"github.com/triaton/forum-backend-echo/models"
 	"net/http"
 )
 
 type (
-	Controller struct {
+	CommentController struct {
 	}
 
 	AddCommentRequest struct {
@@ -20,7 +20,7 @@ type (
 	}
 )
 
-func (controller Controller) Routes() []common.Route {
+func (controller CommentController) Routes() []common.Route {
 	return []common.Route{
 		{
 			Method:  echo.GET,
@@ -36,7 +36,7 @@ func (controller Controller) Routes() []common.Route {
 	}
 }
 
-func (controller Controller) GetComments(ctx echo.Context) error {
+func (controller CommentController) GetComments(ctx echo.Context) error {
 	blogId := ctx.Param("blogId")
 	db := database.GetInstance()
 	var comments []models.Comment
@@ -44,7 +44,7 @@ func (controller Controller) GetComments(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, comments)
 }
 
-func (controller Controller) AddComment(ctx echo.Context) error {
+func (controller CommentController) AddComment(ctx echo.Context) error {
 	params := new(AddCommentRequest)
 	if err := ctx.Bind(params); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err)

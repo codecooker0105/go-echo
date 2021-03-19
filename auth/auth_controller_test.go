@@ -8,8 +8,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/triaton/forum-backend-echo/common"
 	"github.com/triaton/forum-backend-echo/database"
-	"github.com/triaton/forum-backend-echo/models"
 	"github.com/triaton/forum-backend-echo/test"
+	UserModels "github.com/triaton/forum-backend-echo/users/models"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -22,7 +22,7 @@ var testPassword = "123456"
 func TestLoginFailWithNoEmail(t *testing.T) {
 	test.InitTest()
 	testServer := echo.New()
-	authController := Controller{}
+	authController := AuthController{}
 	var loginForm LoginRequest
 	loginForm.Email = testEmail
 	loginForm.Password = testPassword
@@ -43,7 +43,7 @@ func TestLoginFailWithInvalidPassword(t *testing.T) {
 
 	// create a test user
 	db := database.GetInstance()
-	var user models.User
+	var user UserModels.User
 	user.Name = testName
 	user.Email = testEmail
 	user.Role = common.Admin
@@ -52,7 +52,7 @@ func TestLoginFailWithInvalidPassword(t *testing.T) {
 
 	testServer := echo.New()
 	testServer.Validator = &common.CustomValidator{Validator: validator.New()}
-	authController := Controller{}
+	authController := AuthController{}
 	var loginForm LoginRequest
 	loginForm.Email = testEmail
 	loginForm.Password = "wrong password"
@@ -63,7 +63,7 @@ func TestLoginFailWithInvalidPassword(t *testing.T) {
 	context := testServer.NewContext(req, resp)
 
 	if assert.NoError(t, authController.Login(context)) {
-		assert.Equal(t, http.StatusOK, resp.Code)
+		assert.Equal(t, http.StatusUnauthorized, resp.Code)
 	}
 }
 
@@ -72,7 +72,7 @@ func TestLoginSuccess(t *testing.T) {
 
 	// create a test user
 	db := database.GetInstance()
-	var user models.User
+	var user UserModels.User
 	user.Name = testName
 	user.Email = testEmail
 	user.Role = common.Admin
@@ -81,7 +81,7 @@ func TestLoginSuccess(t *testing.T) {
 
 	testServer := echo.New()
 	testServer.Validator = &common.CustomValidator{Validator: validator.New()}
-	authController := Controller{}
+	authController := AuthController{}
 	var loginForm LoginRequest
 	loginForm.Email = testEmail
 	loginForm.Password = testPassword

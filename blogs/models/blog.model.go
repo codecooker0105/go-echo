@@ -1,12 +1,12 @@
 package models
 
 import (
-	_ "github.com/jinzhu/gorm"
 	uuid "github.com/satori/go.uuid"
+	"github.com/triaton/forum-backend-echo/common/models"
 )
 
 type Blog struct {
-	Base
+	models.Base
 	Title    string
 	Content  string
 	UserID   uuid.UUID

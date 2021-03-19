@@ -2,9 +2,9 @@ package test
 
 import (
 	"github.com/joho/godotenv"
+	BlogModels "github.com/triaton/forum-backend-echo/blogs/models"
 	"github.com/triaton/forum-backend-echo/database"
-	"github.com/triaton/forum-backend-echo/migrations"
-	"github.com/triaton/forum-backend-echo/models"
+	UserModels "github.com/triaton/forum-backend-echo/users/models"
 	"log"
 	"os"
 )
@@ -15,12 +15,11 @@ func InitTest() {
 		log.Fatal("failed to load test env config: ", err)
 	}
 	db := database.GetInstance()
-	// TODO: remove all tables before test
 	db.DropTable("migrations")
-	db.DropTableIfExists(&models.User{})
-	db.DropTableIfExists(&models.Blog{})
-	db.DropTableIfExists(&models.Comment{})
-	m := migrations.GetMigrations(db)
+	db.DropTableIfExists(&UserModels.User{})
+	db.DropTableIfExists(&BlogModels.Blog{})
+	db.DropTableIfExists(&BlogModels.Comment{})
+	m := database.GetMigrations(db)
 	err = m.Migrate()
 	if err != nil {
 		log.Fatal("failed to run db migration: ", err)

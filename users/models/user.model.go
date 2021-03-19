@@ -1,19 +1,20 @@
 package models
 
 import (
-	_ "github.com/jinzhu/gorm"
+	BlogModels "github.com/triaton/forum-backend-echo/blogs/models"
 	"github.com/triaton/forum-backend-echo/common"
+	CommonModels "github.com/triaton/forum-backend-echo/common/models"
 	"github.com/triaton/forum-backend-echo/common/utils"
 )
 
 type User struct {
-	Base
+	CommonModels.Base
 	Email    string `gorm:"type:varchar(100);unique_index"`
 	Name     string
 	Role     common.UserRole
 	Password string
-	Blogs    []Blog
-	Comments []Comment
+	Blogs    []BlogModels.Blog
+	Comments []BlogModels.Comment
 }
 
 func (user User) String() string {

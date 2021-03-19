@@ -8,14 +8,14 @@ import (
 	"github.com/triaton/forum-backend-echo/common/utils"
 	"github.com/triaton/forum-backend-echo/config"
 	"github.com/triaton/forum-backend-echo/database"
-	"github.com/triaton/forum-backend-echo/models"
+	"github.com/triaton/forum-backend-echo/users"
 	"net/http"
 	"os"
 	"time"
 )
 
 type (
-	Controller struct {
+	AuthController struct {
 	}
 
 	RegisterUserRequest struct {
@@ -34,7 +34,7 @@ func (r RegisterUserRequest) String() string {
 	return fmt.Sprintf("%s, %s, %s", r.Email, r.Name, r.Password)
 }
 
-func (controller Controller) Routes() []common.Route {
+func (controller AuthController) Routes() []common.Route {
 	return []common.Route{
 		{
 			Method:  echo.POST,
@@ -55,13 +55,13 @@ func (controller Controller) Routes() []common.Route {
 	}
 }
 
-func (controller Controller) Profile(c echo.Context) error {
+func (controller AuthController) Profile(c echo.Context) error {
 	user := c.Get("user").(*jwt.Token)
 	token := user.Claims.(*common.JwtCustomClaims)
 	return c.JSON(http.StatusOK, token)
 }
 
-func (controller Controller) Register(ctx echo.Context) error {
+func (controller AuthController) Register(ctx echo.Context) error {
 	params := new(RegisterUserRequest)
 	if err := ctx.Bind(params); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err)
@@ -70,11 +70,7 @@ func (controller Controller) Register(ctx echo.Context) error {
 		return ctx.JSON(http.StatusBadRequest, err)
 	}
 	db := database.GetInstance()
-	var user models.User
-	err := db.First(&user, "email = ?", params.Email).Error
-	if err == nil {
-		return echo.NewHTTPError(http.StatusBadRequest, "registered email")
-	}
+	user := users.FindUserByEmail(params.Email)
 	user.Name = params.Name
 	user.Email = params.Email
 	user.Role = common.Admin
@@ -83,7 +79,7 @@ func (controller Controller) Register(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, user)
 }
 
-func (controller Controller) Login(ctx echo.Context) error {
+func (controller AuthController) Login(ctx echo.Context) error {
 	params := new(LoginRequest)
 	if err := ctx.Bind(params); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err)
@@ -91,16 +87,13 @@ func (controller Controller) Login(ctx echo.Context) error {
 	if err := ctx.Validate(params); err != nil {
 		return ctx.JSON(http.StatusBadRequest, err)
 	}
-	db := database.GetInstance()
 
-	user := models.User{}
-	err := db.First(&user, "email = ?", params.Email).Error
-	if err != nil {
-		print(err)
-		return echo.NewHTTPError(http.StatusUnauthorized, "Invalid email or password")
+	user := users.FindUserByEmail(params.Email)
+	if user == nil {
+		return ctx.String(http.StatusUnauthorized, "Invalid email or password")
 	}
 	if matched := utils.CheckPasswordHash(params.Password, user.Password); !matched {
-		return echo.NewHTTPError(http.StatusUnauthorized, "Invalid email or password")
+		return ctx.String(http.StatusUnauthorized, "Invalid email or password")
 	}
 	// Create token
 	claims := &common.JwtCustomClaims{

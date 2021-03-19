@@ -1,7 +1,8 @@
-package migrations
+package database
 
 import (
-	"github.com/triaton/forum-backend-echo/models"
+	BlogModels "github.com/triaton/forum-backend-echo/blogs/models"
+	UserModels "github.com/triaton/forum-backend-echo/users/models"
 	"gopkg.in/gormigrate.v1"
 )
 import "github.com/jinzhu/gorm"
@@ -11,13 +12,13 @@ func GetMigrations(db *gorm.DB) *gormigrate.Gormigrate {
 		{
 			ID: "2020080201",
 			Migrate: func(tx *gorm.DB) error {
-				if err := tx.AutoMigrate(&models.User{}).Error; err != nil {
+				if err := tx.AutoMigrate(&UserModels.User{}).Error; err != nil {
 					return err
 				}
-				if err := tx.AutoMigrate(&models.Blog{}).Error; err != nil {
+				if err := tx.AutoMigrate(&BlogModels.Blog{}).Error; err != nil {
 					return err
 				}
-				if err := tx.AutoMigrate(&models.Comment{}).Error; err != nil {
+				if err := tx.AutoMigrate(&BlogModels.Comment{}).Error; err != nil {
 					return err
 				}
 				return nil
