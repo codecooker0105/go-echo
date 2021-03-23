@@ -6,12 +6,8 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/triaton/forum-backend-echo/common"
 	"github.com/triaton/forum-backend-echo/common/utils"
-	"github.com/triaton/forum-backend-echo/config"
-	"github.com/triaton/forum-backend-echo/database"
 	"github.com/triaton/forum-backend-echo/users"
 	"net/http"
-	"os"
-	"time"
 )
 
 type (
@@ -67,15 +63,12 @@ func (controller AuthController) Register(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err)
 	}
 	if err := ctx.Validate(params); err != nil {
-		return ctx.JSON(http.StatusBadRequest, err)
+		return echo.NewHTTPError(http.StatusBadRequest, err)
 	}
-	db := database.GetInstance()
-	user := users.FindUserByEmail(params.Email)
-	user.Name = params.Name
-	user.Email = params.Email
-	user.Role = common.Admin
-	user.Password = params.Password
-	db.Create(&user)
+	if user := users.UsersService().FindUserByEmail(params.Email); user != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "email is already used")
+	}
+	user := users.UsersService().AddUser(params.Name, params.Email, params.Password)
 	return ctx.JSON(http.StatusOK, user)
 }
 
@@ -88,31 +81,20 @@ func (controller AuthController) Login(ctx echo.Context) error {
 		return ctx.JSON(http.StatusBadRequest, err)
 	}
 
-	user := users.FindUserByEmail(params.Email)
+	user := users.UsersService().FindUserByEmail(params.Email)
 	if user == nil {
-		return ctx.String(http.StatusUnauthorized, "Invalid email or password")
+		return echo.NewHTTPError(http.StatusUnauthorized, "Invalid email or password")
 	}
 	if matched := utils.CheckPasswordHash(params.Password, user.Password); !matched {
-		return ctx.String(http.StatusUnauthorized, "Invalid email or password")
+		return echo.NewHTTPError(http.StatusUnauthorized, "Invalid email or password")
 	}
 	// Create token
-	claims := &common.JwtCustomClaims{
-		Name: user.Name,
-		Id:   user.ID,
-		Role: user.Role,
-		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(time.Hour * config.TokenExpiresIn).Unix(),
-			IssuedAt:  time.Now().Unix(),
-		},
-	}
-
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	t, err := token.SignedString([]byte(os.Getenv("JWT_SECRET_KEY")))
+	token, err := AuthService().GetAccessToken(user)
 	if err != nil {
 		return err
 	}
 
 	return ctx.JSON(http.StatusOK, map[string]string{
-		"token": t,
+		"token": token,
 	})
 }
