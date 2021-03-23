@@ -9,10 +9,15 @@ import (
 
 type usersService struct{}
 
-var singleton *usersService
+var singleton UsersService
 var once sync.Once
 
-func UsersService() *usersService {
+type UsersService interface {
+	FindUserByEmail(email string) *models.User
+	AddUser(name string, email string, password string) *models.User
+}
+
+func GetUsersService() UsersService {
 	once.Do(func() {
 		singleton = &usersService{}
 	})
@@ -39,4 +44,8 @@ func (u *usersService) AddUser(name string, email string, password string) *mode
 	db := database.GetInstance()
 	db.Create(&user)
 	return &user
+}
+
+func SetMockService(service UsersService) {
+	singleton = service
 }

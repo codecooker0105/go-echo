@@ -8,7 +8,9 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/triaton/forum-backend-echo/common"
 	"github.com/triaton/forum-backend-echo/database"
+	mocks "github.com/triaton/forum-backend-echo/mocks/users"
 	"github.com/triaton/forum-backend-echo/test"
+	"github.com/triaton/forum-backend-echo/users"
 	UserModels "github.com/triaton/forum-backend-echo/users/models"
 	"net/http"
 	"net/http/httptest"
@@ -39,23 +41,17 @@ func TestLoginFailWithParameterValidation(t *testing.T) {
 }
 
 func TestLoginFailWithNonExistingUser(t *testing.T) {
-	test.InitTest()
-
-	// create a test user
-	db := database.GetInstance()
-	var user UserModels.User
-	user.Name = testName
-	user.Email = testEmail
-	user.Role = common.Admin
-	user.Password = testPassword
-	db.Create(&user)
-
 	testServer := echo.New()
 	testServer.Validator = &common.CustomValidator{Validator: validator.New()}
 	authController := AuthController{}
-	var loginForm LoginRequest
-	loginForm.Email = testEmail
-	loginForm.Password = "wrong password"
+	loginForm := LoginRequest{
+		Email:    testEmail,
+		Password: testPassword,
+	}
+	mockUserService := &mocks.UsersService{}
+	mockUserService.On("FindUserByEmail", testEmail).Return(nil)
+	users.SetMockService(mockUserService)
+
 	data, _ := json.Marshal(loginForm)
 	req := httptest.NewRequest(http.MethodPost, "/", bytes.NewBufferString(string(data)))
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
@@ -66,17 +62,6 @@ func TestLoginFailWithNonExistingUser(t *testing.T) {
 }
 
 func TestLoginFailWithInvalidPassword(t *testing.T) {
-	test.InitTest()
-
-	// create a test user
-	db := database.GetInstance()
-	var user UserModels.User
-	user.Name = testName
-	user.Email = testEmail
-	user.Role = common.Admin
-	user.Password = testPassword
-	db.Create(&user)
-
 	testServer := echo.New()
 	testServer.Validator = &common.CustomValidator{Validator: validator.New()}
 	authController := AuthController{}

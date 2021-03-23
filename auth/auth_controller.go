@@ -65,10 +65,10 @@ func (controller AuthController) Register(ctx echo.Context) error {
 	if err := ctx.Validate(params); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err)
 	}
-	if user := users.UsersService().FindUserByEmail(params.Email); user != nil {
+	if user := users.GetUsersService().FindUserByEmail(params.Email); user != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "email is already used")
 	}
-	user := users.UsersService().AddUser(params.Name, params.Email, params.Password)
+	user := users.GetUsersService().AddUser(params.Name, params.Email, params.Password)
 	return ctx.JSON(http.StatusOK, user)
 }
 
@@ -81,7 +81,7 @@ func (controller AuthController) Login(ctx echo.Context) error {
 		return ctx.JSON(http.StatusBadRequest, err)
 	}
 
-	user := users.UsersService().FindUserByEmail(params.Email)
+	user := users.GetUsersService().FindUserByEmail(params.Email)
 	if user == nil {
 		return echo.NewHTTPError(http.StatusUnauthorized, "Invalid email or password")
 	}

@@ -27,6 +27,7 @@ require (
 	github.com/swaggo/echo-swagger v1.0.0 // indirect
 	github.com/swaggo/swag v1.6.7
 	github.com/valyala/fasttemplate v1.2.0 // indirect
+	github.com/vektra/mockery v1.1.2 // indirect
 	golang.org/x/crypto v0.0.0-20200709230013-948cd5f35899
 	golang.org/x/net v0.0.0-20200707034311-ab3426394381 // indirect
 	golang.org/x/sys v0.0.0-20200625212154-ddb9806d33ae // indirect
