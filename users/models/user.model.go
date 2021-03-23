@@ -22,7 +22,7 @@ func (user User) String() string {
 }
 
 func (user *User) BeforeSave() (err error) {
-	hashed, err := utils.HashPassword(user.Password)
+	hashed, err := utils.GetPasswordUtil().HashPassword(user.Password)
 	user.Password = hashed
 	return
 }

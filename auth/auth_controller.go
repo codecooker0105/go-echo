@@ -85,7 +85,7 @@ func (controller AuthController) Login(ctx echo.Context) error {
 	if user == nil {
 		return echo.NewHTTPError(http.StatusUnauthorized, "Invalid email or password")
 	}
-	if matched := utils.CheckPasswordHash(params.Password, user.Password); !matched {
+	if matched := utils.GetPasswordUtil().CheckPasswordHash(params.Password, user.Password); !matched {
 		return echo.NewHTTPError(http.StatusUnauthorized, "Invalid email or password")
 	}
 	// Create token

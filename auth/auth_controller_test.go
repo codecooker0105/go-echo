@@ -7,8 +7,9 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
 	"github.com/triaton/forum-backend-echo/common"
-	"github.com/triaton/forum-backend-echo/database"
-	mocks "github.com/triaton/forum-backend-echo/mocks/users"
+	"github.com/triaton/forum-backend-echo/common/utils"
+	MocksUtils "github.com/triaton/forum-backend-echo/mocks/common/utils"
+	MocksUsers "github.com/triaton/forum-backend-echo/mocks/users"
 	"github.com/triaton/forum-backend-echo/test"
 	"github.com/triaton/forum-backend-echo/users"
 	UserModels "github.com/triaton/forum-backend-echo/users/models"
@@ -26,7 +27,7 @@ func TestLoginFailWithParameterValidation(t *testing.T) {
 	testServer := echo.New()
 	authController := AuthController{}
 	var loginForm LoginRequest
-	loginForm.Email = "invalid email"
+	loginForm.Email = "non-email-format"
 	loginForm.Password = "password"
 	data, _ := json.Marshal(loginForm)
 
@@ -48,9 +49,9 @@ func TestLoginFailWithNonExistingUser(t *testing.T) {
 		Email:    testEmail,
 		Password: testPassword,
 	}
-	mockUserService := &mocks.UsersService{}
+	mockUserService := &MocksUsers.UsersService{}
 	mockUserService.On("FindUserByEmail", testEmail).Return(nil)
-	users.SetMockService(mockUserService)
+	originalUserService := users.SetUsersService(mockUserService)
 
 	data, _ := json.Marshal(loginForm)
 	req := httptest.NewRequest(http.MethodPost, "/", bytes.NewBufferString(string(data)))
@@ -59,6 +60,7 @@ func TestLoginFailWithNonExistingUser(t *testing.T) {
 	context := testServer.NewContext(req, resp)
 	httpError := authController.Login(context).(*echo.HTTPError)
 	assert.Equal(t, http.StatusUnauthorized, httpError.Code)
+	users.SetUsersService(originalUserService)
 }
 
 func TestLoginFailWithInvalidPassword(t *testing.T) {
@@ -68,6 +70,14 @@ func TestLoginFailWithInvalidPassword(t *testing.T) {
 	var loginForm LoginRequest
 	loginForm.Email = testEmail
 	loginForm.Password = "wrong password"
+	mockUserService := &MocksUsers.UsersService{}
+	mockUserService.On("FindUserByEmail", testEmail).Return(&UserModels.User{
+		Name:     testEmail,
+		Password: testPassword,
+		Role:     common.Admin,
+	})
+	originalUserService := users.SetUsersService(mockUserService)
+
 	data, _ := json.Marshal(loginForm)
 	req := httptest.NewRequest(http.MethodPost, "/", bytes.NewBufferString(string(data)))
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
@@ -76,19 +86,26 @@ func TestLoginFailWithInvalidPassword(t *testing.T) {
 
 	httpError := authController.Login(context).(*echo.HTTPError)
 	assert.Equal(t, http.StatusUnauthorized, httpError.Code)
+	users.SetUsersService(originalUserService)
 }
 
 func TestLoginSuccess(t *testing.T) {
 	test.InitTest()
 
 	// create a test user
-	db := database.GetInstance()
-	var user UserModels.User
-	user.Name = testName
-	user.Email = testEmail
-	user.Role = common.Admin
-	user.Password = testPassword
-	db.Create(&user)
+	user := UserModels.User{
+		Name:     testName,
+		Email:    testEmail,
+		Role:     common.Admin,
+		Password: testPassword,
+	}
+	mockUserService := &MocksUsers.UsersService{}
+	mockUserService.On("FindUserByEmail", testEmail).Return(&user)
+	originalUserService := users.SetUsersService(mockUserService)
+
+	mockPasswordUtil := MocksUtils.PasswordUtil{}
+	mockPasswordUtil.On("CheckPasswordHash", testPassword, testPassword).Return(true)
+	originalPasswordUtil := utils.SetPasswordUtil(&mockPasswordUtil)
 
 	testServer := echo.New()
 	testServer.Validator = &common.CustomValidator{Validator: validator.New()}
@@ -105,4 +122,6 @@ func TestLoginSuccess(t *testing.T) {
 	if assert.NoError(t, authController.Login(context)) {
 		assert.Equal(t, http.StatusOK, resp.Code)
 	}
+	users.SetUsersService(originalUserService)
+	utils.SetPasswordUtil(originalPasswordUtil)
 }

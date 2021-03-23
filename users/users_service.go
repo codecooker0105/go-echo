@@ -12,16 +12,25 @@ type usersService struct{}
 var singleton UsersService
 var once sync.Once
 
-type UsersService interface {
-	FindUserByEmail(email string) *models.User
-	AddUser(name string, email string, password string) *models.User
-}
-
 func GetUsersService() UsersService {
+	if singleton != nil {
+		return singleton
+	}
 	once.Do(func() {
 		singleton = &usersService{}
 	})
 	return singleton
+}
+
+func SetUsersService(service UsersService) UsersService {
+	original := singleton
+	singleton = service
+	return original
+}
+
+type UsersService interface {
+	FindUserByEmail(email string) *models.User
+	AddUser(name string, email string, password string) *models.User
 }
 
 func (u *usersService) FindUserByEmail(email string) *models.User {
@@ -44,8 +53,4 @@ func (u *usersService) AddUser(name string, email string, password string) *mode
 	db := database.GetInstance()
 	db.Create(&user)
 	return &user
-}
-
-func SetMockService(service UsersService) {
-	singleton = service
 }
