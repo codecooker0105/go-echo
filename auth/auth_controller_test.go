@@ -10,7 +10,6 @@ import (
 	"github.com/triaton/forum-backend-echo/common/utils"
 	MocksUtils "github.com/triaton/forum-backend-echo/mocks/common/utils"
 	MocksUsers "github.com/triaton/forum-backend-echo/mocks/users"
-	"github.com/triaton/forum-backend-echo/test"
 	"github.com/triaton/forum-backend-echo/users"
 	UserModels "github.com/triaton/forum-backend-echo/users/models"
 	"net/http"
@@ -19,11 +18,11 @@ import (
 )
 
 var testName = "test"
-var testEmail = "test-gin-boilerplate@test.com"
+var testEmail = "test@test.com"
 var testPassword = "123456"
 
 func TestLoginFailWithParameterValidation(t *testing.T) {
-	test.InitTest()
+	println("Login api should return 400 error when the request parameters are invalid")
 	testServer := echo.New()
 	authController := AuthController{}
 	var loginForm LoginRequest
@@ -42,6 +41,7 @@ func TestLoginFailWithParameterValidation(t *testing.T) {
 }
 
 func TestLoginFailWithNonExistingUser(t *testing.T) {
+	println("Login api should return 401 error when requested email was not found")
 	testServer := echo.New()
 	testServer.Validator = &common.CustomValidator{Validator: validator.New()}
 	authController := AuthController{}
@@ -64,6 +64,7 @@ func TestLoginFailWithNonExistingUser(t *testing.T) {
 }
 
 func TestLoginFailWithInvalidPassword(t *testing.T) {
+	println("Login api should return 401 error when the password does not match")
 	testServer := echo.New()
 	testServer.Validator = &common.CustomValidator{Validator: validator.New()}
 	authController := AuthController{}
@@ -90,8 +91,7 @@ func TestLoginFailWithInvalidPassword(t *testing.T) {
 }
 
 func TestLoginSuccess(t *testing.T) {
-	test.InitTest()
-
+	println("Login api should return 200 response when login was successful")
 	// create a test user
 	user := UserModels.User{
 		Name:     testName,
@@ -124,4 +124,88 @@ func TestLoginSuccess(t *testing.T) {
 	}
 	users.SetUsersService(originalUserService)
 	utils.SetPasswordUtil(originalPasswordUtil)
+}
+
+func TestRegisterInvalidParams(t *testing.T) {
+	println("Register api should return 400 error when requested parameters are invalid")
+	testServer := echo.New()
+	testServer.Validator = &common.CustomValidator{Validator: validator.New()}
+	authController := AuthController{}
+	var registerForm RegisterUserRequest
+	registerForm.Email = "wrong-email-format"
+	registerForm.Password = testPassword
+	registerForm.Name = testName
+	data, _ := json.Marshal(registerForm)
+	req := httptest.NewRequest(http.MethodPost, "/", bytes.NewBufferString(string(data)))
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+	resp := httptest.NewRecorder()
+	context := testServer.NewContext(req, resp)
+
+	httpError := authController.Register(context).(*echo.HTTPError)
+	assert.Equal(t, http.StatusBadRequest, httpError.Code)
+}
+
+func TestRegisterEmailConflict(t *testing.T) {
+	println("Register api should return 400 error when the email is already used")
+	testServer := echo.New()
+	testServer.Validator = &common.CustomValidator{Validator: validator.New()}
+	authController := AuthController{}
+	registerForm := RegisterUserRequest{
+		Email:    testEmail,
+		Password: testPassword,
+		Name:     testName,
+	}
+	mockUserService := &MocksUsers.UsersService{}
+	mockUserService.On("FindUserByEmail", testEmail).Return(&UserModels.User{
+		Name:     testEmail,
+		Password: testPassword,
+		Role:     common.Admin,
+	})
+	originalUserService := users.SetUsersService(mockUserService)
+	data, _ := json.Marshal(registerForm)
+	req := httptest.NewRequest(http.MethodPost, "/", bytes.NewBufferString(string(data)))
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+	resp := httptest.NewRecorder()
+	context := testServer.NewContext(req, resp)
+
+	httpError := authController.Register(context).(*echo.HTTPError)
+	assert.Equal(t, http.StatusBadRequest, httpError.Code)
+	users.SetUsersService(originalUserService)
+}
+
+func TestRegisterSuccess(t *testing.T) {
+	println("Register api should return 200 response when the register is succeeded")
+	testServer := echo.New()
+	testServer.Validator = &common.CustomValidator{Validator: validator.New()}
+	authController := AuthController{}
+	registerForm := RegisterUserRequest{
+		Email:    testEmail,
+		Password: testPassword,
+		Name:     testName,
+	}
+	mockUserService := &MocksUsers.UsersService{}
+	mockUserService.On("FindUserByEmail", testEmail).Return(nil)
+	mockUserService.On("AddUser", testName, testEmail, testPassword).Return(&UserModels.User{
+		Name:     testName,
+		Email:    testEmail,
+		Password: testPassword,
+		Role:     common.Admin,
+	})
+	originalUserService := users.SetUsersService(mockUserService)
+	data, _ := json.Marshal(registerForm)
+	req := httptest.NewRequest(http.MethodPost, "/", bytes.NewBufferString(string(data)))
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+	resp := httptest.NewRecorder()
+	context := testServer.NewContext(req, resp)
+	if assert.NoError(t, authController.Register(context)) {
+		assert.Equal(t, http.StatusOK, resp.Code)
+	}
+	users.SetUsersService(originalUserService)
+}
+
+func TestRoutes(t *testing.T) {
+	println("There should be 3 routes defined")
+	authController := AuthController{}
+	routes := authController.Routes()
+	assert.Equal(t, len(routes), 3)
 }
