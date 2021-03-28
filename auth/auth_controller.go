@@ -1,7 +1,6 @@
 package auth
 
 import (
-	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/labstack/echo/v4"
 	"github.com/triaton/forum-backend-echo/common"
@@ -25,10 +24,6 @@ type (
 		Password string `json:"password" validate:"required"`
 	}
 )
-
-func (r RegisterUserRequest) String() string {
-	return fmt.Sprintf("%s, %s, %s", r.Email, r.Name, r.Password)
-}
 
 func (controller AuthController) Routes() []common.Route {
 	return []common.Route{
@@ -89,7 +84,7 @@ func (controller AuthController) Login(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusUnauthorized, "Invalid email or password")
 	}
 	// Create token
-	token, err := AuthService().GetAccessToken(user)
+	token, err := GetAuthService().GetAccessToken(user)
 	if err != nil {
 		return err
 	}

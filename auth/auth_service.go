@@ -12,14 +12,24 @@ import (
 
 type authService struct{}
 
-var singleton *authService
+var singleton AuthService
 var once sync.Once
 
-func AuthService() *authService {
+func GetAuthService() AuthService {
 	once.Do(func() {
 		singleton = &authService{}
 	})
 	return singleton
+}
+
+func SetAuthService(service AuthService) AuthService {
+	original := singleton
+	singleton = service
+	return original
+}
+
+type AuthService interface {
+	GetAccessToken(user *UserModels.User) (string, error)
 }
 
 func (s *authService) GetAccessToken(user *UserModels.User) (string, error) {

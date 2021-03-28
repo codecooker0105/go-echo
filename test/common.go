@@ -9,11 +9,16 @@ import (
 	"os"
 )
 
-func InitTest() {
+func LoadTestEnv() error {
 	err := godotenv.Load(os.ExpandEnv("$GOPATH/src/github.com/triaton/forum-backend-echo/test.env"))
 	if err != nil {
 		log.Fatal("failed to load test env config: ", err)
 	}
+	return err
+}
+
+func InitTest() {
+	err := LoadTestEnv()
 	db := database.GetInstance()
 	db.DropTable("migrations")
 	db.DropTableIfExists(&UserModels.User{})

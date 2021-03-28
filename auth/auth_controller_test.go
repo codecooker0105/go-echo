@@ -3,18 +3,23 @@ package auth
 import (
 	"bytes"
 	"encoding/json"
+	"github.com/dgrijalva/jwt-go"
 	"github.com/go-playground/validator"
 	"github.com/labstack/echo/v4"
+	uuid "github.com/satori/go.uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/triaton/forum-backend-echo/common"
 	"github.com/triaton/forum-backend-echo/common/utils"
+	"github.com/triaton/forum-backend-echo/config"
 	MocksUtils "github.com/triaton/forum-backend-echo/mocks/common/utils"
 	MocksUsers "github.com/triaton/forum-backend-echo/mocks/users"
+	"github.com/triaton/forum-backend-echo/test"
 	"github.com/triaton/forum-backend-echo/users"
 	UserModels "github.com/triaton/forum-backend-echo/users/models"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 )
 
 var testName = "test"
@@ -208,4 +213,37 @@ func TestRoutes(t *testing.T) {
 	authController := AuthController{}
 	routes := authController.Routes()
 	assert.Equal(t, len(routes), 3)
+}
+
+func TestProfile(t *testing.T) {
+	println("Profile api should return 200 response when the authorization header is valid")
+	test.LoadTestEnv()
+	token, _ := GetAuthService().GetAccessToken(&UserModels.User{
+		Name:     testName,
+		Email:    testEmail,
+		Password: testPassword,
+		Role:     common.Admin,
+	})
+
+	testServer := echo.New()
+	testServer.Use(common.JwtMiddleWare())
+	authController := AuthController{}
+	req := httptest.NewRequest(http.MethodGet, "/", nil)
+	req.Header.Set(echo.HeaderAuthorization, token)
+	resp := httptest.NewRecorder()
+	context := testServer.NewContext(req, resp)
+	uid, _ := uuid.NewV4()
+	jwtClaims := common.JwtCustomClaims{
+		Name: testName,
+		Id:   uid,
+		Role: common.Admin,
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: time.Now().Add(time.Hour * config.TokenExpiresIn).Unix(),
+			IssuedAt:  time.Now().Unix(),
+		},
+	}
+	context.Set("user", jwt.NewWithClaims(jwt.SigningMethodHS256, &jwtClaims))
+	if assert.NoError(t, authController.Profile(context)) {
+		assert.Equal(t, http.StatusOK, resp.Code)
+	}
 }
