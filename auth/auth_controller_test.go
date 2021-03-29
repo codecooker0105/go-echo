@@ -26,6 +26,21 @@ var testName = "test"
 var testEmail = "test@test.com"
 var testPassword = "123456"
 
+func TestLoginFailWithInvalidPayload(t *testing.T) {
+	println("Login api should return 400 error when the request payload is invalid")
+	testServer := echo.New()
+	authController := AuthController{}
+
+	req := httptest.NewRequest(http.MethodPost, "/", bytes.NewBufferString("invalid json format"))
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+	resp := httptest.NewRecorder()
+	context := testServer.NewContext(req, resp)
+
+	if assert.NoError(t, authController.Login(context)) {
+		assert.Equal(t, http.StatusBadRequest, resp.Code)
+	}
+}
+
 func TestLoginFailWithParameterValidation(t *testing.T) {
 	println("Login api should return 400 error when the request parameters are invalid")
 	testServer := echo.New()
@@ -129,6 +144,20 @@ func TestLoginSuccess(t *testing.T) {
 	}
 	users.SetUsersService(originalUserService)
 	utils.SetPasswordUtil(originalPasswordUtil)
+}
+
+func TestRegisterInvalidPayload(t *testing.T) {
+	println("Register api should return 400 error when requested payload is invalid")
+	testServer := echo.New()
+	testServer.Validator = &common.CustomValidator{Validator: validator.New()}
+	authController := AuthController{}
+	req := httptest.NewRequest(http.MethodPost, "/", bytes.NewBufferString("invalid json format"))
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+	resp := httptest.NewRecorder()
+	context := testServer.NewContext(req, resp)
+
+	httpError := authController.Register(context).(*echo.HTTPError)
+	assert.Equal(t, http.StatusBadRequest, httpError.Code)
 }
 
 func TestRegisterInvalidParams(t *testing.T) {

@@ -22,11 +22,11 @@ func GetAuthService() AuthService {
 	return singleton
 }
 
-func SetAuthService(service AuthService) AuthService {
-	original := singleton
-	singleton = service
-	return original
-}
+//func SetAuthService(service AuthService) AuthService {
+//	original := singleton
+//	singleton = service
+//	return original
+//}
 
 type AuthService interface {
 	GetAccessToken(user *UserModels.User) (string, error)

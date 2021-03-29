@@ -84,10 +84,7 @@ func (controller AuthController) Login(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusUnauthorized, "Invalid email or password")
 	}
 	// Create token
-	token, err := GetAuthService().GetAccessToken(user)
-	if err != nil {
-		return err
-	}
+	token, _ := GetAuthService().GetAccessToken(user)
 
 	return ctx.JSON(http.StatusOK, map[string]string{
 		"token": token,
