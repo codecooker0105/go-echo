@@ -18,16 +18,10 @@ func GetMigrations(db *gorm.DB) *gormigrate.Gormigrate {
 				if err := tx.AutoMigrate(&BlogModels.Blog{}).Error; err != nil {
 					return err
 				}
-				if err := tx.AutoMigrate(&BlogModels.Comment{}).Error; err != nil {
-					return err
-				}
 				return nil
 			},
 			Rollback: func(tx *gorm.DB) error {
 				if err := tx.DropTable("blogs").Error; err != nil {
-					return nil
-				}
-				if err := tx.DropTable("comments").Error; err != nil {
 					return nil
 				}
 				if err := tx.DropTable("users").Error; err != nil {

@@ -36,9 +36,8 @@ func TestLoginFailWithInvalidPayload(t *testing.T) {
 	resp := httptest.NewRecorder()
 	context := testServer.NewContext(req, resp)
 
-	if assert.NoError(t, authController.Login(context)) {
-		assert.Equal(t, http.StatusBadRequest, resp.Code)
-	}
+	httpError := authController.Login(context).(*echo.HTTPError)
+	assert.Equal(t, http.StatusBadRequest, httpError.Code)
 }
 
 func TestLoginFailWithParameterValidation(t *testing.T) {
@@ -54,10 +53,8 @@ func TestLoginFailWithParameterValidation(t *testing.T) {
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	resp := httptest.NewRecorder()
 	context := testServer.NewContext(req, resp)
-
-	if assert.NoError(t, authController.Login(context)) {
-		assert.Equal(t, http.StatusBadRequest, resp.Code)
-	}
+	httpError := authController.Login(context).(*echo.HTTPError)
+	assert.Equal(t, http.StatusBadRequest, httpError.Code)
 }
 
 func TestLoginFailWithNonExistingUser(t *testing.T) {

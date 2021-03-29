@@ -73,7 +73,7 @@ func (controller AuthController) Login(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err)
 	}
 	if err := ctx.Validate(params); err != nil {
-		return ctx.JSON(http.StatusBadRequest, err)
+		return echo.NewHTTPError(http.StatusBadRequest, err)
 	}
 
 	user := users.GetUsersService().FindUserByEmail(params.Email)

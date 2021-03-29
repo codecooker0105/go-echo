@@ -7,8 +7,7 @@ import (
 
 type Blog struct {
 	models.Base
-	Title    string
-	Content  string
-	UserID   uuid.UUID
-	Comments []Comment
+	Title   string
+	Content string
+	UserID  uuid.UUID
 }

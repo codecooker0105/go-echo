@@ -14,7 +14,6 @@ type User struct {
 	Role     common.UserRole
 	Password string
 	Blogs    []BlogModels.Blog
-	Comments []BlogModels.Comment
 }
 
 func (user User) String() string {

@@ -23,7 +23,6 @@ func InitTest() {
 	db.DropTable("migrations")
 	db.DropTableIfExists(&UserModels.User{})
 	db.DropTableIfExists(&BlogModels.Blog{})
-	db.DropTableIfExists(&BlogModels.Comment{})
 	m := database.GetMigrations(db)
 	err = m.Migrate()
 	if err != nil {

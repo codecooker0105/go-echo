@@ -74,8 +74,5 @@ func (controller BlogsController) GetBlog(ctx echo.Context) error {
 	if err != nil {
 		return echo.NewHTTPError(http.StatusNotFound, "Blog not found")
 	}
-	var comments []models.Comment
-	db.Model(&blog).Association("Comments").Find(&comments)
-	blog.Comments = comments
 	return ctx.JSON(http.StatusOK, blog)
 }

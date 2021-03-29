@@ -11,7 +11,6 @@ func DefineApiRoute(e *echo.Echo) {
 	controllers := []common.Controller{
 		auth.AuthController{},
 		blogs.BlogsController{},
-		blogs.CommentController{},
 	}
 	var routes []common.Route
 	for _, controller := range controllers {
