@@ -1,4 +1,5 @@
 .env
-.cover*
+cover.*
 gin-bin
 test.*
+.idea
