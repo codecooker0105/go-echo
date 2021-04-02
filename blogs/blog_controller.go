@@ -3,9 +3,9 @@ package blogs
 import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/labstack/echo/v4"
-	"github.com/triaton/forum-backend-echo/blogs/models"
-	"github.com/triaton/forum-backend-echo/common"
-	"github.com/triaton/forum-backend-echo/database"
+	"github.com/triaton/go-echo-boilerplate/blogs/models"
+	"github.com/triaton/go-echo-boilerplate/common"
+	"github.com/triaton/go-echo-boilerplate/database"
 	"net/http"
 )
 

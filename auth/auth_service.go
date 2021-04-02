@@ -2,9 +2,9 @@ package auth
 
 import (
 	"github.com/dgrijalva/jwt-go"
-	"github.com/triaton/forum-backend-echo/common"
-	"github.com/triaton/forum-backend-echo/config"
-	UserModels "github.com/triaton/forum-backend-echo/users/models"
+	"github.com/triaton/go-echo-boilerplate/common"
+	"github.com/triaton/go-echo-boilerplate/config"
+	UserModels "github.com/triaton/go-echo-boilerplate/users/models"
 	"os"
 	"sync"
 	"time"

@@ -3,3 +3,4 @@ cover.*
 gin-bin
 test.*
 .idea
+test.env

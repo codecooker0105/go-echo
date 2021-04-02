@@ -1,8 +1,8 @@
 package database
 
 import (
-	BlogModels "github.com/triaton/forum-backend-echo/blogs/models"
-	UserModels "github.com/triaton/forum-backend-echo/users/models"
+	BlogModels "github.com/triaton/go-echo-boilerplate/blogs/models"
+	UserModels "github.com/triaton/go-echo-boilerplate/users/models"
 	"gopkg.in/gormigrate.v1"
 )
 import "github.com/jinzhu/gorm"

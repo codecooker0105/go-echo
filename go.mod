@@ -1,4 +1,4 @@
-module github.com/triaton/forum-backend-echo
+module github.com/triaton/go-echo-boilerplate
 
 go 1.14
 

@@ -2,7 +2,7 @@ package models
 
 import (
 	uuid "github.com/satori/go.uuid"
-	"github.com/triaton/forum-backend-echo/common/models"
+	"github.com/triaton/go-echo-boilerplate/common/models"
 )
 
 type Blog struct {

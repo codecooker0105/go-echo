@@ -3,9 +3,9 @@ package auth
 import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/labstack/echo/v4"
-	"github.com/triaton/forum-backend-echo/common"
-	"github.com/triaton/forum-backend-echo/common/utils"
-	"github.com/triaton/forum-backend-echo/users"
+	"github.com/triaton/go-echo-boilerplate/common"
+	"github.com/triaton/go-echo-boilerplate/common/utils"
+	"github.com/triaton/go-echo-boilerplate/users"
 	"net/http"
 )
 

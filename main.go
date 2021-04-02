@@ -5,9 +5,9 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"github.com/triaton/forum-backend-echo/common"
-	"github.com/triaton/forum-backend-echo/database"
-	"github.com/triaton/forum-backend-echo/routes"
+	"github.com/triaton/go-echo-boilerplate/common"
+	"github.com/triaton/go-echo-boilerplate/database"
+	"github.com/triaton/go-echo-boilerplate/routes"
 	"log"
 )
 

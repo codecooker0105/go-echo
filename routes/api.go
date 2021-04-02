@@ -2,9 +2,9 @@ package routes
 
 import (
 	"github.com/labstack/echo/v4"
-	"github.com/triaton/forum-backend-echo/auth"
-	"github.com/triaton/forum-backend-echo/blogs"
-	"github.com/triaton/forum-backend-echo/common"
+	"github.com/triaton/go-echo-boilerplate/auth"
+	"github.com/triaton/go-echo-boilerplate/blogs"
+	"github.com/triaton/go-echo-boilerplate/common"
 )
 
 func DefineApiRoute(e *echo.Echo) {

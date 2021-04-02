@@ -2,15 +2,15 @@ package test
 
 import (
 	"github.com/joho/godotenv"
-	BlogModels "github.com/triaton/forum-backend-echo/blogs/models"
-	"github.com/triaton/forum-backend-echo/database"
-	UserModels "github.com/triaton/forum-backend-echo/users/models"
+	BlogModels "github.com/triaton/go-echo-boilerplate/blogs/models"
+	"github.com/triaton/go-echo-boilerplate/database"
+	UserModels "github.com/triaton/go-echo-boilerplate/users/models"
 	"log"
 	"os"
 )
 
 func LoadTestEnv() error {
-	err := godotenv.Load(os.ExpandEnv("$GOPATH/src/github.com/triaton/forum-backend-echo/test.env"))
+	err := godotenv.Load(os.ExpandEnv("$GOPATH/src/github.com/triaton/go-echo-boilerplate/test.env"))
 	if err != nil {
 		log.Fatal("failed to load test env config: ", err)
 	}

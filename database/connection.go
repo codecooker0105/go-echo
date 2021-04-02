@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
-	"github.com/triaton/forum-backend-echo/config"
+	"github.com/triaton/go-echo-boilerplate/config"
 	"log"
 	"sync"
 )

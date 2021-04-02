@@ -1,9 +1,9 @@
 package users
 
 import (
-	"github.com/triaton/forum-backend-echo/common"
-	"github.com/triaton/forum-backend-echo/database"
-	"github.com/triaton/forum-backend-echo/users/models"
+	"github.com/triaton/go-echo-boilerplate/common"
+	"github.com/triaton/go-echo-boilerplate/database"
+	"github.com/triaton/go-echo-boilerplate/users/models"
 	"sync"
 )
 
