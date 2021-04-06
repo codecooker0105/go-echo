@@ -15,5 +15,8 @@ addons:
       - gcc-4.8
       - clang
 
+install:
+  - mv .env.example test.env
+
 script:
   - go test -v ./...
