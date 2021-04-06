@@ -1,0 +1,19 @@
+language: go
+go:
+  - 1.13.x
+  - 1.14.x
+  - master
+
+dist: trusty
+
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - g++-4.8
+      - gcc-4.8
+      - clang
+
+script:
+  - go test -v ./...
