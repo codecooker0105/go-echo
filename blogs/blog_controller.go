@@ -23,7 +23,7 @@ func (controller BlogsController) Routes() []common.Route {
 	return []common.Route{
 		{
 			Method:     echo.POST,
-			Path:       "/blogs",
+			Path:       "/blog",
 			Handler:    controller.AddBlog,
 			Middleware: []echo.MiddlewareFunc{common.JwtMiddleWare()},
 		},
@@ -34,7 +34,7 @@ func (controller BlogsController) Routes() []common.Route {
 		},
 		{
 			Method:  echo.GET,
-			Path:    "/blogs/:blogId",
+			Path:    "/blog/:blogId",
 			Handler: controller.GetBlog,
 		},
 	}
