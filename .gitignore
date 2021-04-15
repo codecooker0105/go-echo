@@ -4,3 +4,4 @@ gin-bin
 test.*
 .idea
 test.env
+go-echo-boilerplate
