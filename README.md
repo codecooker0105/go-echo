@@ -1,6 +1,14 @@
 # Go REST api Boilerplate Project using Echo Framework
 The fastest way to build a restful api with [Echo](https://github.com/labstack/echo/) with a structured project that using **PostgreSQL** db and **JWT** base authentication middleware.
- 
+
+This project ships following features as default
+* orm integration
+* easy database migration
+* authentication using jwt
+* easy dotenv management
+* easy to mock all interfaces
+* cors configuration
+
  Inspired from [Gin boilerplate](https://github.com/Massad/gin-boilerplate).
  
 [![License](https://img.shields.io/github/license/triaton/go-echo-boilerplate)](https://github.com/triaton/go-echo-boilerplate/blob/master/LICENSE)
