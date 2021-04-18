@@ -2,12 +2,12 @@
 The fastest way to build a restful api with [Echo](https://github.com/labstack/echo/) with a structured project that using **PostgreSQL** db and **JWT** base authentication middleware.
 
 This project ships following features as default
-* orm integration
-* easy database migration
-* authentication using jwt
-* easy dotenv management
-* easy to mock all interfaces
-* cors configuration
+* ORM Integration
+* Easy Database Migration
+* Authentication Using Jwt
+* Easy dotenv Management
+* Easy to Mock all Interfaces
+* CORS Configuration
 
  Inspired from [Gin boilerplate](https://github.com/Massad/gin-boilerplate).
  
